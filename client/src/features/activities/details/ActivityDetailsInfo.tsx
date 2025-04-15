@@ -55,8 +55,7 @@ export default function ActivityDetailsInfo({ activity }: Props) {
                         venue={activity.venue}
                     />
                 </Box>
-            )
-            }
+            )}
         </Paper >
     )
 }
