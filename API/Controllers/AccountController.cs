@@ -56,8 +56,6 @@ public class AccountController(SignInManager<User> signInManager) : BaseApiContr
     {
         await signInManager.SignOutAsync();
 
-
-
         return NoContent();
     }
 }
