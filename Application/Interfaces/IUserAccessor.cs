@@ -5,7 +5,9 @@ namespace Application.Interfaces;
 
 public interface IUserAccessor
 {
-    string GetUserId();
+   string GetUserId();
 
-    Task<User> GetUserAsync();
+   Task<User> GetUserAsync();
+
+   Task<User> GetUserWithPhotosAsync();
 }

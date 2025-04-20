@@ -70,6 +70,7 @@ export default function ActivityDetailsHeader({ activity }: Props) {
                      >
                         Manage Event
                      </StyledButton>
+
                   </>
                ) : (
                   <StyledButton
@@ -83,6 +84,6 @@ export default function ActivityDetailsHeader({ activity }: Props) {
                )}
             </Box>
          </Box>
-      </Card>
+      </Card >
    )
 }

@@ -1,13 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import agent from "../api/agent"
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useAccount } from "./useAccount";
+import { toast } from "react-toastify";
 
 export const useActivities = (id?: string) => {
 
    const queryClient = useQueryClient();
    const { currentUser } = useAccount();
    const location = useLocation();
+   const navigate = useNavigate();
 
    const { data: activities, isLoading } = useQuery({
       queryKey: ["activities"],
@@ -45,7 +47,7 @@ export const useActivities = (id?: string) => {
 
    const updateActivity = useMutation({
       mutationFn: async (activity: Activity) => {
-         await agent.put("/activities", activity)
+         await agent.put(`/activities/${activity.id}`, activity)
       },
       onSuccess: async () => {
          await queryClient.invalidateQueries({
@@ -67,13 +69,16 @@ export const useActivities = (id?: string) => {
    })
 
    const deleteActivity = useMutation({
+
       mutationFn: async (id: string) => {
          await agent.delete(`/activities/${id}`)
       },
       onSuccess: async () => {
+         navigate("/activities");
+         toast.success(`Activity successfully deleted`)
          await queryClient.invalidateQueries({
             queryKey: ["activities"]
-         })
+         });
       }
    });
 

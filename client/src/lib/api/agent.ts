@@ -4,68 +4,68 @@ import { toast } from "react-toastify";
 import { router } from "../../app/router/Routes";
 
 const sleep = (delay: number) => {
-    return new Promise(resolve => {
-        setTimeout(resolve, delay)
-    })
+   return new Promise(resolve => {
+      setTimeout(resolve, delay)
+   })
 }
 
 const agent = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    withCredentials: true
+   baseURL: import.meta.env.VITE_API_URL,
+   withCredentials: true
 })
 
 agent.interceptors.request.use(config => {
-    store.uiStore.setBusy();
-    return config;
+   store.uiStore.setBusy();
+   return config;
 })
 
 agent.interceptors.response.use(
-    async response => {
-        await sleep(1000);
-        store.uiStore.setIdle();
-        return response;
-    },
+   async response => {
+      await sleep(500);
+      store.uiStore.setIdle();
+      return response;
+   },
 
-    async error => {
-        await sleep(1000);
-        store.uiStore.setIdle();
+   async error => {
+      await sleep(500);
+      store.uiStore.setIdle();
 
-        const { status, data } = error.response;
+      const { status, data } = error.response;
 
-        switch (status) {
-            case 400:
-                if (data.errors) {
-                    const modalStateErrors = [];
-                    for (const key in data.errors) {
-                        if (data.errors[key]) {
-                            modalStateErrors.push(data.errors[key])
-                        }
-                    }
-                    throw modalStateErrors.flat();
-                } else {
-                    toast.error(data);
-                }
-                break;
+      switch (status) {
+         case 400:
+            if (data.errors) {
+               const modalStateErrors = [];
+               for (const key in data.errors) {
+                  if (data.errors[key]) {
+                     modalStateErrors.push(data.errors[key])
+                  }
+               }
+               throw modalStateErrors.flat();
+            } else {
+               toast.error(data);
+            }
+            break;
 
-            case 401:
-                toast.error("Unauthorised");
-                break;
+         case 401:
+            toast.error("Unauthorised");
+            break;
 
-            case 404:
-                router.navigate("/not-found");
-                break;
+         case 404:
+            router.navigate("/not-found");
+            break;
 
-            case 500:
-                router.navigate("/server-error", { state: { error: data } })
-                break;
+         case 500:
+            router.navigate("/server-error", { state: { error: data } })
+            break;
 
-            default:
-                break;
-        }
+         default:
+            break;
+      }
 
-        return Promise.reject(error);
-        // rethrow for react query to handle
-    }
+      return Promise.reject(error);
+      // rethrow for react query to handle
+   }
 );
 
 export default agent
