@@ -1,5 +1,6 @@
 using System;
 using Application.Core;
+using Application.Interfaces;
 using Application.Profiles.DTOs;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -11,23 +12,23 @@ namespace Application.Profiles.Queries;
 
 public class GetProfile
 {
-   public class Querie : IRequest<Result<UserProfile>>
-   {
-      public required string UserId { get; set; }
-   }
+    public class Querie : IRequest<Result<UserProfile>>
+    {
+        public required string UserId { get; set; }
+    }
 
-   public class Handler(AppDbContext context, IMapper mapper)
-      : IRequestHandler<Querie, Result<UserProfile>>
-   {
-      public async Task<Result<UserProfile>> Handle(Querie request, CancellationToken cancellationToken)
-      {
-         var profile = await context.Users
-            .ProjectTo<UserProfile>(mapper.ConfigurationProvider)
-            .SingleOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
+    public class Handler(AppDbContext context, IMapper mapper, IUserAccessor userAccessor)
+       : IRequestHandler<Querie, Result<UserProfile>>
+    {
+        public async Task<Result<UserProfile>> Handle(Querie request, CancellationToken cancellationToken)
+        {
+            var profile = await context.Users
+               .ProjectTo<UserProfile>(mapper.ConfigurationProvider, new { currentUserId = userAccessor.GetUserId() })
+               .SingleOrDefaultAsync(x => x.Id == request.UserId, cancellationToken);
 
-         return profile == null
-            ? Result<UserProfile>.Failure("Profile not found", 404)
-            : Result<UserProfile>.Success(profile);
-      }
-   }
+            return profile == null
+               ? Result<UserProfile>.Failure("Profile not found", 404)
+               : Result<UserProfile>.Success(profile);
+        }
+    }
 }
