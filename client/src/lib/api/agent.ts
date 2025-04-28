@@ -21,7 +21,7 @@ agent.interceptors.request.use(config => {
 
 agent.interceptors.response.use(
     async response => {
-        await sleep(100);
+        await sleep(1000);
         store.uiStore.setIdle();
         return response;
     },
