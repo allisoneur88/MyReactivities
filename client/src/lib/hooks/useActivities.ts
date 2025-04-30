@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useAccount } from "./useAccount";
 import { toast } from "react-toastify";
 import { useStore } from "./useStore";
+import { FieldValues } from "react-hook-form";
 
 export const useActivities = (id?: string) => {
 
@@ -27,7 +28,7 @@ export const useActivities = (id?: string) => {
             return response.data
         },
 
-        staleTime: 1000 * 60 * 5, // 5 minutes stale time
+        // staleTime: 1000 * 60 * 5, // 5 minutes stale time
 
         placeholderData: keepPreviousData,
 
@@ -84,7 +85,7 @@ export const useActivities = (id?: string) => {
     })
 
     const createActivity = useMutation({
-        mutationFn: async (activity: Activity) => {
+        mutationFn: async (activity: FieldValues) => {
             const response = await agent.post("/activities", activity);
             return response.data;
         },

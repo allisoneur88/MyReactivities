@@ -26,7 +26,7 @@ builder.Services.AddControllers(opt =>
 });
 builder.Services.AddDbContext<AppDbContext>(opt =>
 {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddCors();
 builder.Services.AddSignalR();
@@ -76,9 +76,13 @@ app.UseCors(x =>
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseDefaultFiles(); // looks for index.html in wwwroot folder
+app.UseStaticFiles(); // use contents of wwwroot folder
+
 app.MapControllers();
 app.MapGroup("api").MapIdentityApi<User>(); // api/login
 app.MapHub<CommentHub>("/comments"); // signalR hub -- localhost:5001/comments
+app.MapFallbackToController("Index", "Fallback");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
